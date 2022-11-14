@@ -1,0 +1,38 @@
+
+----------------------------------------------------------------------
+INFORMAÇÕES GERAIS
+----------------------------------------------------------------------
+
+Random User Generator API v1.4
+Usuarios na amostra = 500
+Data & Hora: 14/11/2022 00:02
+
+----------------------------------------------------------------------
+RELATÓRIO
+----------------------------------------------------------------------
+
+Ao todo, 53.20% da amostra é composta por usuários do sexo masculino
+enquanto os 46.80% restantes são compostos por usuários do sexo feminino.
+
+A distribuicao de usuários por país é a que segue:
+Australia            -> 4.40%
+Brazil               -> 5.40%
+Canada               -> 6.20%
+Denmark              -> 4.60%
+Finland              -> 6.00%
+France               -> 3.60%
+Germany              -> 4.40%
+India                -> 4.20%
+Iran                 -> 5.40%
+Ireland              -> 5.20%
+Mexico               -> 4.60%
+Netherlands          -> 4.60%
+New Zealand          -> 4.40%
+Norway               -> 5.20%
+Serbia               -> 3.80%
+Spain                -> 5.20%
+Switzerland          -> 3.40%
+Turkey               -> 5.40%
+Ukraine              -> 5.80%
+United Kingdom       -> 3.20%
+United States        -> 5.00%
