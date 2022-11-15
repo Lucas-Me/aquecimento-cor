@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+import os
 
 # ----------------------------------------------------------------------------
 # Variaveis Globais
@@ -206,32 +207,76 @@ def age_histogram(df : pd.DataFrame, fname : str, dx : int = 5) -> None:
     return None
 
 
-def groupby_country_state(df : pd.DataFrame) -> pd.DataFrame:
+def groupby_userinfo(df : pd.DataFrame, group_by_criteria : list[str], as_dataframe = True) -> pd.DataFrame:
     '''
-    Agrupa o DataFrame contendo informações de usuários de acordo com o seu
-    país e estado.
-    Após agrupar, retorna um DataFrame com a quantidade de usuários por grupo e 
-    uma nova coluna com uma "lista" contendo a referencia para cada usuario.
+    Agrupa o DataFrame contendo informações de usuários de acordo com os critérios
+    especificados.
+    Após agrupar, retorna um DataFrame ou MultiIndex com a quantidade de usuários
+    por grupo e uma nova coluna com uma "lista" contendo a referencia para cada usuario.
     '''
 
-    # Selecionando colunas
-    country  = df['location_country']
-    state = df['location_state']
+    # Se o usuários passou uma string
+    if isinstance(group_by_criteria, str):
+        group_by_criteria = list(group_by_criteria)
 
     # cria uma coluna como ID de cada usuario, baseado nos indices do DataFrame
     df["user_id"] = df.index 
 
     # Agrupa, Conta e Reinicia os índices
-    group = df.groupby([country, state]) 
+    group = df.groupby(group_by_criteria) 
     count = group.agg(
         user_count = ('id_name', 'count'), # conta o numero de usuarios
         users = ('user_id', lambda x: list(x)) # lista com o indice de cada usuarios
         ) # retorna um MultiIndex
 
-    count = count.reset_index() # transforma um MultiIndex em um DataFrame
+    if as_dataframe: # Se sim, transforma o MultiIndex em um DataFrame
+        count = count.reset_index()
 
-    # organiza em ordem decrescente de acordo com a quantidade de usuarios por grupo.
-    count = count.sort_values(by = ["user_count"], ascending = False)
-    count.reset_index(drop= False) 
+        # organiza em ordem decrescente de acordo com a quantidade de usuarios por grupo.
+        count = count.sort_values(by = ["user_count"], ascending = False)
+        count.reset_index(drop = True) 
 
     return count
+
+
+def create_partition(df : pd.DataFrame, group_by_criteria : list[str], name : str = 'data') -> None :
+    '''
+    Agrupa o DataFrame de acordo com os critéros especificados e particiona os
+    dados.
+    '''
+    extension = '.csv'
+    new_name = name + extension
+
+    # Se o usuários passou uma string
+    if isinstance(group_by_criteria, str):
+        group_by_criteria = list(group_by_criteria)
+
+    # Particionando
+    grouped_df = groupby_userinfo(df, group_by_criteria, as_dataframe = False)
+
+    # Removendo as colunas utilizadas para o particionamento do DataFrame
+    df = df.copy() # fazendo uma copia
+    df = df.drop(columns=group_by_criteria)
+
+    # preparando os "caminhos" das novas pastas
+    new_dirs = [criteria + "={}" for criteria in group_by_criteria]
+    path_format = os.path.join(name, *new_dirs)
+
+    # loop entre os indices do MultiIndex
+    index = grouped_df.index
+    for i in range(index.shape[0]):
+        users = grouped_df.loc[index[i]]['users']
+        partition = df.iloc[users]
+
+        # criando diretorio se nao existe
+        dir_ = path_format.format(*index[i])
+        os.makedirs(dir_, exist_ok=True)
+
+        # salvando o arquivo
+        path = os.path.join(dir_, new_name)
+        partition.to_csv(path, index = False)
+
+    # Fim
+    return None
+
+
