@@ -39,7 +39,7 @@ def main(**kwargs):
   # Gera e salva uma figura com a distribuicao de idade
   # Apenas se solicitado
   if kwargs.get('get_figure', False):
-    dx = kwargs.get('age_bin', 5) # intervalo do eixo horizontal no histograma
+    dx = kwargs.get('age_interval', 5) # intervalo do eixo horizontal no histograma
     utilities.age_histogram(
       df = consulta,
       fname = 'histograma_idade.png',
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     'get_report' : True,
     'get_figure' : True,
     'format_cellphone' : True,
-    'age_bin' : 5,
+    'age_interval' : 5,
     'partition' : True,
   }
   main(**kwargs)
