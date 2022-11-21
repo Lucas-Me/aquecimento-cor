@@ -2,15 +2,36 @@ import requests
 import json
 
 from pandas import DataFrame
-from utilities import unpack_dictionary
+import numpy as np
+from utilities import unpack_dictionary, COUNTRY_CODE
 
 
 class RandomUserAPI():
     _source_API = "https://randomuser.me/api/"
 
     def __init__(self) -> None:
-        self.blacklist = ["login"] # Parametros a serem excluidos
+        self.blacklist = [] # Parametros a serem excluidos
+        self.nat = [] # especifica a naturalidade, padrao é todos
         pass
+
+    def update_nat(self, nat):
+        '''
+        Atualiza a nacionalidade do usuarios a serem requisitados
+        na api
+        '''
+        valid_nat = list(COUNTRY_CODE.keys())
+    
+        if isinstance(nat, str):
+          nat = [nat]
+        
+        # se nao houver uma nacionalidade valida
+        # retorna uma lista vazia
+        nat = np.array(nat)
+        is_valid = np.isin(nat, valid_nat)
+        self.nat = list(np.char.lower(nat[is_valid]))
+        print(self.nat, is_valid)
+
+        return None
 
     def request(self, n = 500, as_dataframe = True):
         # prepara o sufixo para o pedido
@@ -19,8 +40,13 @@ class RandomUserAPI():
         # checa se um parametro deve ser excluido e inclui no sufixo
         if len(self.blacklist) > 0:
             # separado por virgula, nao precisa dos colchetes
-            parameters = str(self.blacklist)[1:-1].replace("'", "")
+            parameters = str(self.blacklist)[1:-1].replace("'", "").replace(' ', '')
             suffix += "&exc=" + parameters
+
+        # checa se o usuario especificou uma nacionalidade
+        if len(self.nat) > 0:
+            parameters = str(self.nat)[1:-1].replace("'", "").replace(' ', '')
+            suffix += "&nat=" + parameters
 
         # API contem como chaves -> ['results', 'info']
         # informacao desejada esta em 'results'

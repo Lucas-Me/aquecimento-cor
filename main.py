@@ -13,6 +13,10 @@ def main(**kwargs):
   blacklist = kwargs.get('blacklist', [])
   generator.update_blacklist(blacklist)
 
+  # Filtrando por nacionalidade, se necessario
+  nats = kwargs.get('nat', [])
+  generator.update_nat(nats)
+
   # obtendo o DataFrame
   n = kwargs.get('requests', 500)
   consulta = generator.request(n = n, as_dataframe=True)
@@ -24,8 +28,8 @@ def main(**kwargs):
 
   # Salva as informacoes em um arquivo csv localizado na mesma pasta do Notebook
   # Padrao é salvar pelo menos os dados em um arquivo de texto
-  destino = kwargs.get('csv_fname', 'consulta.csv')
-  consulta.to_csv(destino, index = False)
+  destino = kwargs.get('fname', 'data')
+  consulta.to_csv(destino + '.csv', index = False)
 
   # Gera e salva um relatorio em um arquivo txt
   # Apenas se solicitado
@@ -46,14 +50,15 @@ def main(**kwargs):
   # Apenas se solicitado
   if kwargs.get('partition', False):
     criterios = ['location_country', 'location_state']
-    utilities.create_partition(consulta, criterios, 'data')
+    utilities.create_partition(consulta, criterios, destino)
 
 
 if __name__ == "__main__":
   kwargs = {
     'blacklist' : ['login'],
+    'nat' : ['BR', 'US'],
     'requests' : 500,
-    'csv_fname' : 'consulta.csv',
+    'fname' : 'consulta',
     'get_report' : True,
     'get_figure' : True,
     'format_cellphone' : True,

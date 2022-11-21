@@ -56,7 +56,7 @@ def unpack_dictionary(dicionario : dict, preffix : str = "") -> dict:
     for k, v in dicionario.items():
         if isinstance(v, dict):
             old_dict = unpack_dictionary(v, preffix = preffix + k + "_")
-            new_dict = new_dict | old_dict
+            new_dict = {**new_dict, **old_dict}
         
         else:
             new_key = preffix + k
@@ -182,7 +182,6 @@ def age_histogram(df : pd.DataFrame, fname : str, dx : int = 5) -> None:
     fig, ax = plt.subplots(figsize = (12, 8))
     bars = ax.bar(binx[:-1], pct, color = "chocolate", edgecolor = 'white',
                 align = 'edge', width = dx)
-    ax.bar_label(bars, labels = hist)
 
     # propriedades do plot
     ax.set_title("Distribuição da idade dos usuários", fontsize = 20)
@@ -207,7 +206,7 @@ def age_histogram(df : pd.DataFrame, fname : str, dx : int = 5) -> None:
     return None
 
 
-def groupby_userinfo(df : pd.DataFrame, group_by_criteria : list[str], as_dataframe = True) -> pd.DataFrame:
+def groupby_userinfo(df : pd.DataFrame, group_by_criteria, as_dataframe = True) -> pd.DataFrame:
     '''
     Agrupa o DataFrame contendo informações de usuários de acordo com os critérios
     especificados.
@@ -239,7 +238,7 @@ def groupby_userinfo(df : pd.DataFrame, group_by_criteria : list[str], as_datafr
     return count
 
 
-def create_partition(df : pd.DataFrame, group_by_criteria : list[str], name : str = 'data') -> None :
+def create_partition(df : pd.DataFrame, group_by_criteria, name = 'data') -> None :
     '''
     Agrupa o DataFrame de acordo com os critéros especificados e particiona os
     dados.
@@ -260,7 +259,7 @@ def create_partition(df : pd.DataFrame, group_by_criteria : list[str], name : st
 
     # preparando os "caminhos" das novas pastas
     new_dirs = [criteria + "={}" for criteria in group_by_criteria]
-    path_format = os.path.join(name, *new_dirs)
+    path_format = os.path.join('partitions', *new_dirs)
 
     # loop entre os indices do MultiIndex
     index = grouped_df.index
