@@ -29,7 +29,6 @@ class RandomUserAPI():
         nat = np.array(nat)
         is_valid = np.isin(nat, valid_nat)
         self.nat = list(np.char.lower(nat[is_valid]))
-        print(self.nat, is_valid)
 
         return None
 
