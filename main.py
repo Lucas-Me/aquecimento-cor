@@ -26,7 +26,7 @@ def main(**kwargs):
   if kwargs.get('format_cellphone', False):
     consulta = utilities.format_phonenumber(consulta)
 
-  # Salva as informacoes em um arquivo csv localizado na mesma pasta do Notebook
+  # Salva as informacoes em um arquivo csv localizado na mesma pasta do script
   # Padrao é salvar pelo menos os dados em um arquivo de texto
   destino = kwargs.get('fname', 'data')
   consulta.to_csv(destino + '.csv', index = False)
@@ -55,14 +55,14 @@ def main(**kwargs):
 
 if __name__ == "__main__":
   kwargs = {
-    'blacklist' : ['login'],
-    'nat' : ['BR', 'US'],
-    'requests' : 500,
-    'fname' : 'consulta',
-    'get_report' : True,
-    'get_figure' : True,
-    'format_cellphone' : True,
-    'age_interval' : 5,
-    'partition' : True,
+    'blacklist' : ['login'], # categorias para excluir da solicitacao
+    'nat' : ['BR', 'US'], # filtrar por nacionalidade
+    'requests' : 500, # numeros de pedidos
+    'fname' : 'consulta', # nome do arquivo csv
+    'get_report' : True, # se incluir relatorio
+    'get_figure' : True, # se incluir figura do histograma de idade
+    'format_cellphone' : True, # modifica o formato dos numeros de telefone / celular
+    'age_interval' : 5, # intervalo do histograma
+    'partition' : True, # se particionar em formato hive
   }
   main(**kwargs)
